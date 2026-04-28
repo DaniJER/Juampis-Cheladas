@@ -1,0 +1,8 @@
+export enum BotState {
+  START = 'START',
+  MENU = 'MENU',
+  PRODUCT = 'PRODUCT',
+  QUANTITY = 'QUANTITY',
+  ADDRESS = 'ADDRESS',
+  CONFIRMATION = 'CONFIRMATION',
+}
