@@ -1,98 +1,109 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Juampis Cheladas — Bot de WhatsApp
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Chatbot de pedidos para una coctelería, sobre **WhatsApp Cloud API** (Meta for
+Developers). Toda la lógica conversacional corre en este backend NestJS; Meta
+solo es el transporte de mensajes.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```
+Cliente (WhatsApp) ─► Meta Cloud API ─► NestJS (este repo)
+                                          ├─ motor del bot (máquina de estados)
+                                          ├─ pedidos + conversación en MySQL
+                                          └─ despacho: manda el pedido al staff
+                                             por WhatsApp con botones
+                                          ◄─ notifica al cliente cada cambio de estado
 ```
 
-## Compile and run the project
+## Arquitectura
+
+| Módulo | Responsabilidad |
+|---|---|
+| `src/bot` | `bot-config.json` (menú, FAQs, textos) + `BotEngineService`, la máquina de estados pura. |
+| `src/whatsapp` | Webhook (`GET/POST /webhook`), parseo del payload de Meta, y `WhatsappApiService` (cliente Graph API). |
+| `src/conversation` | Estado de cada chat + guard de idempotencia (Meta reintenta los webhooks). |
+| `src/orders` | Persistencia y ciclo de vida del pedido (`PENDING → ACCEPTED → PREPARING → READY → DISPATCHED → DELIVERED / CANCELLED`). |
+| `src/dispatch` | Notifica al staff con botones y procesa sus respuestas para avanzar el pedido. |
+
+Flujo del cliente: `START → MENU → QUANTITY → ADD_MORE → ADDRESS → CONFIRM`.
+
+## Puesta en marcha (local)
+
+### 1. Dependencias
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+cp .env.example .env   # y completa los valores de WhatsApp
 ```
 
-## Run tests
+### 2. Base de datos (MySQL en Docker)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run db:up            # levanta MySQL + Adminer (http://localhost:8080)
+npm run prisma:migrate   # crea las tablas (primera vez pide un nombre de migración)
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. Correr la app
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev        # http://localhost:3000
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Exponer el webhook a Meta
 
-## Resources
+Meta necesita una URL pública HTTPS. En desarrollo:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npx ngrok http 3000
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+En **Meta App → WhatsApp → Configuration → Webhook**:
 
-## Support
+- Callback URL: `https://<tu-subdominio>.ngrok-free.app/webhook`
+- Verify token: el mismo valor de `WHATSAPP_VERIFY_TOKEN`
+- Suscríbete al campo **messages**.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Variables de entorno
 
-## Stay in touch
+| Variable | Descripción |
+|---|---|
+| `DATABASE_URL` | Cadena de conexión MySQL (por defecto apunta al contenedor). |
+| `WHATSAPP_PHONE_NUMBER_ID` | Meta App → WhatsApp → API Setup. |
+| `WHATSAPP_ACCESS_TOKEN` | Token de **System User** de larga duración (no el temporal de 24 h). |
+| `WHATSAPP_VERIFY_TOKEN` | Cadena aleatoria que eliges; debe coincidir con la config del webhook. |
+| `WHATSAPP_API_VERSION` | Versión del Graph API (`v21.0`). |
+| `META_APP_SECRET` | Opcional. Si se define, se valida la firma `X-Hub-Signature-256`. |
+| `STAFF_WA_IDS` | Teléfonos del staff separados por coma, formato internacional sin `+` (ej. `573001112233`). |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Cómo se despacha un pedido
 
-## License
+1. El cliente confirma → se crea el `Order` y se envía un mensaje con botones a cada número de `STAFF_WA_IDS`: **Aceptar / Rechazar**.
+2. Staff pulsa **Aceptar** → pedido `ACCEPTED`, el cliente recibe aviso, al staff le llegan botones **Listo / Cancelar**.
+3. **Listo** → `READY`, aviso al cliente, botón **Despachado**.
+4. **Despachado** → `DISPATCHED`, aviso final al cliente.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> **Ventana de 24 h:** Meta solo permite mensajes de formato libre dentro de las 24 h posteriores al último mensaje del usuario. Para que el bot pueda escribirle al staff, cada número de staff debe haber escrito algo al bot en las últimas 24 h, o hay que usar plantillas aprobadas. Para producción conviene registrar una plantilla de "nuevo pedido".
+
+## Editar el menú / textos
+
+Todo el contenido está en [`src/bot/bot-config.json`](src/bot/bot-config.json):
+productos, precios, disponibilidad, FAQs (por palabras clave) y todos los
+textos del bot. Se valida al arrancar con Zod. Más adelante esto puede moverse
+a la base de datos con un panel de administración.
+
+## Tests
+
+```bash
+npm test          # incluye la cobertura del motor del bot (src/bot/bot-engine.service.spec.ts)
+```
+
+## API auxiliar
+
+- `GET /orders?status=PENDING` — lista de pedidos (sin auth todavía; es la costura para el dashboard de staff de la fase 2).
+- `GET /orders/:id` — detalle de un pedido.
+
+## Pendiente (fase 2+)
+
+- Dashboard web tipo KDS con cola en vivo (WebSocket) y auth de staff.
+- Plantillas de WhatsApp aprobadas para notificaciones fuera de la ventana de 24 h.
+- Pagos (Nequi / Wompi / Mercado Pago).
+- Validación de zona de cobertura por dirección.
+- Panel de administración del menú.

@@ -1,0 +1,50 @@
+{
+  "businessName": "Juampis Cheladas",
+  "currency": "COP",
+  "location": "Cra 66 #10-45, Cali. Frente al parque. 📍",
+  "hours": "Jueves a domingo, 3:00 pm - 11:00 pm",
+  "deliveryFee": 5000,
+  "menu": [
+    { "id": "mojito", "name": "Mojito", "description": "Ron, hierbabuena, limón", "price": 15000, "available": true },
+    { "id": "margarita", "name": "Margarita", "description": "Tequila, triple sec, limón", "price": 18000, "available": true },
+    { "id": "pina_colada", "name": "Piña Colada", "description": "Ron, crema de coco, piña", "price": 16000, "available": true },
+    { "id": "michelada", "name": "Michelada", "description": "Cerveza, limón, salsas, escarcha", "price": 12000, "available": true },
+    { "id": "gin_tonic", "name": "Gin Tonic", "description": "Gin, tónica, toronja", "price": 17000, "available": true }
+  ],
+  "faqs": [
+    {
+      "keywords": ["ubicacion", "ubicación", "direccion", "dirección", "donde", "dónde quedan", "local"],
+      "answer": "Estamos en {location}"
+    },
+    {
+      "keywords": ["horario", "horarios", "hora", "abren", "cierran", "atienden"],
+      "answer": "Nuestro horario: {hours}"
+    },
+    {
+      "keywords": ["domicilio", "domicilios", "envio", "envío", "delivery", "reparto"],
+      "answer": "Hacemos domicilios en Cali. Costo de envío: ${deliveryFee}."
+    },
+    {
+      "keywords": ["pago", "pagos", "pagar", "efectivo", "transferencia", "nequi", "daviplata"],
+      "answer": "Puedes pagar en efectivo contra entrega o por transferencia (Nequi / Daviplata)."
+    }
+  ],
+  "messages": {
+    "welcome": "🍹 ¡Bienvenido a {businessName}!\nElige una opción o escríbenos tu pregunta.",
+    "menuHeader": "Nuestra carta 🍸",
+    "askQuantity": "¿Cuántos *{product}* quieres? Responde con un número (1-20).",
+    "invalidQuantity": "Necesito un número entre 1 y 20. ¿Cuántos quieres?",
+    "addMore": "¿Quieres agregar otro coctel?",
+    "askAddress": "Perfecto. ¿A qué dirección lo enviamos? (incluye barrio y datos útiles)",
+    "confirmHeader": "Revisa tu pedido:",
+    "confirmFooter": "¿Confirmas el pedido?",
+    "orderPlaced": "¡Listo! 🎉 Tu pedido *#{code}* fue recibido. Te avisamos cuando lo acepten y cuando vaya en camino.",
+    "orderCancelled": "Pedido cancelado. Cuando quieras escribe *hola* para empezar de nuevo.",
+    "productUnavailable": "Uy, ese coctel no está disponible ahora mismo. Elige otro de la carta.",
+    "fallback": "No te entendí 🤔. Escribe *menú* para ver opciones o *hola* para empezar.",
+    "statusAccepted": "✅ Tu pedido *#{code}* fue aceptado y ya lo están preparando.",
+    "statusReady": "🍹 Tu pedido *#{code}* está listo.",
+    "statusDispatched": "🛵 Tu pedido *#{code}* va en camino.",
+    "statusCancelledByStaff": "❌ Lo sentimos, tu pedido *#{code}* fue cancelado. Escríbenos para más info."
+  }
+}

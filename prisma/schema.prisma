@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// One row per customer phone number. Holds the current step of the
+/// conversation and the order being assembled (draft) as JSON.
+model Conversation {
+  waId      String   @id @db.VarChar(32)
+  state     String   @default("START") @db.VarChar(32)
+  name      String?  @db.VarChar(120)
+  draft     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  /// Human-friendly incremental number shown to customer and staff.
+  code         Int         @unique @default(autoincrement())
+  customerWaId String      @db.VarChar(32)
+  customerName String?     @db.VarChar(120)
+  status       OrderStatus @default(PENDING)
+  address      String      @db.VarChar(500)
+  notes        String?     @db.VarChar(500)
+  total        Int         @default(0)
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status])
+  @@index([customerWaId])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String @db.VarChar(64)
+  name      String @db.VarChar(120)
+  unitPrice Int
+  quantity  Int
+
+  @@index([orderId])
+}
+
+/// Idempotency guard: WhatsApp re-delivers webhooks, so we record every
+/// message id we have already handled.
+model ProcessedMessage {
+  id        String   @id @db.VarChar(128)
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  READY
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}

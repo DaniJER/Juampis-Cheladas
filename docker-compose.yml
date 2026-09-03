@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: juampis-mysql
+    restart: unless-stopped
+    ports:
+      - '${MYSQL_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-juampis}
+      MYSQL_USER: ${MYSQL_USER:-juampis}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-juampis}
+    volumes:
+      - juampis-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${MYSQL_ROOT_PASSWORD:-root}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Optional lightweight DB UI at http://localhost:8080
+  adminer:
+    image: adminer:latest
+    container_name: juampis-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mysql
+
+volumes:
+  juampis-mysql-data:

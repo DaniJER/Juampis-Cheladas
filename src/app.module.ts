@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { configuration } from './config/configuration';
+import { PrismaModule } from './prisma/prisma.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 @Module({
-  imports: [WhatsappModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      cache: true,
+    }),
+    PrismaModule,
+    WhatsappModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
