@@ -1,12 +1,13 @@
-import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Query, UseGuards } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { OrdersService } from './orders.service';
+import { ApiKeyGuard } from './api-key.guard';
 
 /**
- * Read-only order feed. Phase 1 has no auth — keep it behind the tunnel /
- * a private network, or add a guard before exposing publicly. This is the
- * seam the phase 2 staff dashboard will consume.
+ * Read-only order feed, gated by ApiKeyGuard (`x-api-key` header, see
+ * ADMIN_API_KEY). This is the seam the phase 2 staff dashboard will consume.
  */
+@UseGuards(ApiKeyGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly orders: OrdersService) {}

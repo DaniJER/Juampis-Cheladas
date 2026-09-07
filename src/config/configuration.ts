@@ -8,6 +8,7 @@ export interface AppConfig {
     appSecret: string;
   };
   staffWaIds: string[];
+  adminApiKey: string;
 }
 
 function splitList(value: string | undefined): string[] {
@@ -28,5 +29,6 @@ export function configuration(): AppConfig {
       appSecret: process.env.META_APP_SECRET ?? '',
     },
     staffWaIds: splitList(process.env.STAFF_WA_IDS),
+    adminApiKey: process.env.ADMIN_API_KEY ?? '',
   };
 }
