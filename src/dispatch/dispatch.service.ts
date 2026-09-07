@@ -7,10 +7,11 @@ import { ButtonsMessage } from '../bot/outbound';
 import { WhatsappApiService } from '../whatsapp/whatsapp-api.service';
 import { OrdersService, OrderWithItems } from '../orders/orders.service';
 
-type StaffAction = 'ACCEPT' | 'READY' | 'DISPATCH' | 'CANCEL';
+type StaffAction = 'ACCEPT' | 'PREPARE' | 'READY' | 'DISPATCH' | 'CANCEL';
 
 const ACTION_TO_STATUS: Record<StaffAction, OrderStatus> = {
   ACCEPT: 'ACCEPTED',
+  PREPARE: 'PREPARING',
   READY: 'READY',
   DISPATCH: 'DISPATCHED',
   CANCEL: 'CANCELLED',
@@ -95,6 +96,7 @@ export class DispatchService {
   private async notifyCustomer(order: OrderWithItems): Promise<void> {
     const key: Record<string, string> = {
       ACCEPTED: 'statusAccepted',
+      PREPARING: 'statusPreparing',
       READY: 'statusReady',
       DISPATCHED: 'statusDispatched',
       CANCELLED: 'statusCancelledByStaff',
@@ -110,6 +112,11 @@ export class DispatchService {
   private async confirmToStaff(to: string, order: OrderWithItems): Promise<void> {
     const nextButtons: Partial<Record<OrderStatus, ButtonsMessage['buttons']>> = {
       ACCEPTED: [
+        { id: `${PREFIX}:${order.id}:PREPARE`, title: 'Preparando 🧉' },
+        { id: `${PREFIX}:${order.id}:READY`, title: 'Listo 🍹' },
+        { id: `${PREFIX}:${order.id}:CANCEL`, title: 'Cancelar' },
+      ],
+      PREPARING: [
         { id: `${PREFIX}:${order.id}:READY`, title: 'Listo 🍹' },
         { id: `${PREFIX}:${order.id}:CANCEL`, title: 'Cancelar' },
       ],

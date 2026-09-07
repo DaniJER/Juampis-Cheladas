@@ -42,7 +42,8 @@
     "orderCancelled": "Pedido cancelado. Cuando quieras escribe *hola* para empezar de nuevo.",
     "productUnavailable": "Uy, ese coctel no está disponible ahora mismo. Elige otro de la carta.",
     "fallback": "No te entendí 🤔. Escribe *menú* para ver opciones o *hola* para empezar.",
-    "statusAccepted": "✅ Tu pedido *#{code}* fue aceptado y ya lo están preparando.",
+    "statusAccepted": "✅ Tu pedido *#{code}* fue aceptado.",
+    "statusPreparing": "🧉 Tu pedido *#{code}* ya se está preparando.",
     "statusReady": "🍹 Tu pedido *#{code}* está listo.",
     "statusDispatched": "🛵 Tu pedido *#{code}* va en camino.",
     "statusCancelledByStaff": "❌ Lo sentimos, tu pedido *#{code}* fue cancelado. Escríbenos para más info."
