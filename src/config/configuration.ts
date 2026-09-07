@@ -9,6 +9,11 @@ export interface AppConfig {
   };
   staffWaIds: string[];
   adminApiKey: string;
+  whapi: {
+    baseUrl: string;
+    token: string;
+    webhookSecret: string;
+  };
 }
 
 function splitList(value: string | undefined): string[] {
@@ -30,5 +35,10 @@ export function configuration(): AppConfig {
     },
     staffWaIds: splitList(process.env.STAFF_WA_IDS),
     adminApiKey: process.env.ADMIN_API_KEY ?? '',
+    whapi: {
+      baseUrl: process.env.WHAPI_BASE_URL ?? 'https://gate.whapi.cloud',
+      token: process.env.WHAPI_TOKEN ?? '',
+      webhookSecret: process.env.WHAPI_WEBHOOK_SECRET ?? '',
+    },
   };
 }
