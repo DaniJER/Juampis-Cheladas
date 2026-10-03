@@ -27,11 +27,12 @@ export interface WhapiInboundRaw {
 }
 
 /**
- * Whapi (Baileys-based) sometimes wraps the custom id we sent with a
- * protocol prefix (observed: "ButtonsV3:<our id>"). Strip it defensively
- * so it still matches the plain ids the bot engine expects
- * (e.g. "qty:5", "ord:<id>:ACCEPT"). Unverified against the live API yet —
- * revisit once we've tested against a real channel.
+ * Whapi (Baileys-based) wraps the custom id we sent with a protocol
+ * prefix in button replies: `reply.buttons_reply.id` comes back as
+ * "ButtonsV3:<our id>" (confirmed against the Whapi docs). Strip it so it
+ * still matches the plain ids the bot engine expects (e.g. "qty:5",
+ * "ord:<id>:ACCEPT"). List replies (`list_reply.id`) come back unprefixed;
+ * the regex simply no-ops there.
  */
 function stripReplyPrefix(id: string): string {
   return id.replace(/^[A-Za-z]+V3:/, '');

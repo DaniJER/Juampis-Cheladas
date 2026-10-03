@@ -20,37 +20,54 @@ const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Creates the order with the next sequential number for this business,
+   *  computed transactionally (row-lock on Business.nextOrderSeq) so
+   *  concurrent orders for the same business never collide. */
   async create(
+    businessId: string,
     customerWaId: string,
     customerName: string | undefined,
     order: EngineOrder,
   ): Promise<OrderWithItems> {
-    return this.prisma.order.create({
-      data: {
-        customerWaId,
-        customerName,
-        address: order.address,
-        total: order.total,
-        items: {
-          create: order.items.map((it) => ({
-            productId: it.productId,
-            name: it.name,
-            unitPrice: it.unitPrice,
-            quantity: it.quantity,
-          })),
+    return this.prisma.$transaction(async (tx) => {
+      const business = await tx.business.update({
+        where: { id: businessId },
+        data: { nextOrderSeq: { increment: 1 } },
+        select: { nextOrderSeq: true },
+      });
+
+      return tx.order.create({
+        data: {
+          businessId,
+          businessSeq: business.nextOrderSeq,
+          customerWaId,
+          customerName,
+          address: order.address,
+          total: order.total,
+          items: {
+            create: order.items.map((it) => ({
+              productId: it.productId,
+              name: it.name,
+              unitPrice: it.unitPrice,
+              quantity: it.quantity,
+            })),
+          },
         },
-      },
-      include: { items: true },
+        include: { items: true },
+      });
     });
   }
 
-  findById(id: string): Promise<OrderWithItems | null> {
-    return this.prisma.order.findUnique({ where: { id }, include: { items: true } });
+  /** Scoped to one business — a valid API key for business A must never be
+   *  able to fetch business B's order, even by guessing/enumerating an id. */
+  async findById(businessId: string, id: string): Promise<OrderWithItems | null> {
+    const order = await this.prisma.order.findUnique({ where: { id }, include: { items: true } });
+    return order && order.businessId === businessId ? order : null;
   }
 
-  list(status?: OrderStatus): Promise<OrderWithItems[]> {
+  list(businessId: string, status?: OrderStatus): Promise<OrderWithItems[]> {
     return this.prisma.order.findMany({
-      where: status ? { status } : undefined,
+      where: status ? { businessId, status } : { businessId },
       include: { items: true },
       orderBy: { createdAt: 'desc' },
       take: 100,

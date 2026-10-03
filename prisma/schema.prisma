@@ -7,21 +7,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// One row per customer phone number. Holds the current step of the
-/// conversation and the order being assembled (draft) as JSON.
+/// One row per cocktail bar / business tenant. Holds the credentials and
+/// content that used to be a single static bot-config.json + env vars.
+model Business {
+  id                 String   @id @default(cuid())
+  name               String   @db.VarChar(120)
+  slug               String   @unique @db.VarChar(64)
+  isActive           Boolean  @default(true)
+  whapiBaseUrl       String   @db.VarChar(255)
+  whapiToken         String   @db.VarChar(255)
+  whapiWebhookSecret String   @db.VarChar(255)
+  metaPhoneNumberId  String   @db.VarChar(64)
+  metaAccessToken    String   @db.VarChar(512)
+  metaVerifyToken    String   @db.VarChar(255)
+  metaAppSecret      String   @db.VarChar(255)
+  staffWaIds         String   @db.VarChar(500)
+  adminApiKey        String   @unique @db.VarChar(255)
+  /// Validated against src/bot/bot-config.schema.ts at load time.
+  botConfig          Json
+  /// Per-business order numbering counter, incremented transactionally.
+  nextOrderSeq       Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  conversations     Conversation[]
+  orders            Order[]
+  processedMessages ProcessedMessage[]
+}
+
+/// One row per customer phone number, per business. Holds the current step
+/// of the conversation and the order being assembled (draft) as JSON.
 model Conversation {
-  waId      String   @id @db.VarChar(32)
-  state     String   @default("START") @db.VarChar(32)
-  name      String?  @db.VarChar(120)
-  draft     Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  businessId String   @db.VarChar(32)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  waId       String   @db.VarChar(32)
+  state      String   @default("START") @db.VarChar(32)
+  name       String?  @db.VarChar(120)
+  draft      Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@id([businessId, waId])
 }
 
 model Order {
   id           String      @id @default(cuid())
-  /// Human-friendly incremental number shown to customer and staff.
-  code         Int         @unique @default(autoincrement())
+  businessId   String      @db.VarChar(32)
+  business     Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  /// Human-friendly incremental number shown to customer and staff, unique
+  /// per business (each business starts at #1). Computed transactionally
+  /// against Business.nextOrderSeq — see OrdersService.create().
+  businessSeq  Int
   customerWaId String      @db.VarChar(32)
   customerName String?     @db.VarChar(120)
   status       OrderStatus @default(PENDING)
@@ -32,8 +68,9 @@ model Order {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  @@index([status])
-  @@index([customerWaId])
+  @@unique([businessId, businessSeq])
+  @@index([businessId, status])
+  @@index([businessId, customerWaId])
 }
 
 model OrderItem {
@@ -49,10 +86,15 @@ model OrderItem {
 }
 
 /// Idempotency guard: WhatsApp re-delivers webhooks, so we record every
-/// message id we have already handled.
+/// message id we have already handled, per business (message ids are only
+/// guaranteed unique within one provider channel).
 model ProcessedMessage {
-  id        String   @id @db.VarChar(128)
-  createdAt DateTime @default(now())
+  businessId String   @db.VarChar(32)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  id         String   @db.VarChar(128)
+  createdAt  DateTime @default(now())
+
+  @@id([businessId, id])
 }
 
 enum OrderStatus {

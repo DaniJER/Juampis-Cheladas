@@ -43,3 +43,11 @@ export interface ListMessage {
 export type OutboundMessage = TextMessage | ButtonsMessage | ListMessage;
 
 export const text = (body: string): TextMessage => ({ kind: 'text', body });
+
+/** Shared contract every WhatsApp transport (Whapi, Meta Cloud API) implements,
+ *  so channel-agnostic code (e.g. DispatchService) can send through either. */
+export interface MessagingClient {
+  sendText(to: string, body: string): Promise<void>;
+  send(to: string, message: OutboundMessage): Promise<void>;
+  sendMany(to: string, messages: OutboundMessage[]): Promise<void>;
+}

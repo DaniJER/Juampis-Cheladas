@@ -1,31 +1,40 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { timingSafeEqual } from 'crypto';
 import { Request } from 'express';
-import { AppConfig } from '../config/configuration';
+import { PrismaService } from '../prisma/prisma.service';
+
+export interface RequestWithBusiness extends Request {
+  businessId: string;
+}
 
 /**
- * Guards the orders feed with a static API key sent as `x-api-key`.
- * Good enough for a single internal consumer (staff dashboard, phase 2);
- * swap for real auth once there are multiple staff identities.
+ * Guards the orders feed with a per-business API key sent as `x-api-key`,
+ * looked up against Business.adminApiKey. Attaches the resolved businessId
+ * to the request so the controller/service can scope every query to it.
+ * Good enough for one internal consumer per business (staff dashboard);
+ * swap for real auth once there are multiple staff identities per business.
  */
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(private readonly config: ConfigService<AppConfig, true>) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const expected = this.config.get('adminApiKey', { infer: true });
-    if (!expected) {
-      throw new UnauthorizedException('ADMIN_API_KEY is not configured');
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<RequestWithBusiness>();
+    const provided = request.header('x-api-key') ?? '';
+    if (!provided) {
+      throw new UnauthorizedException('Missing x-api-key');
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
-    const provided = request.header('x-api-key') ?? '';
-
-    if (!timingSafeEqualStrings(provided, expected)) {
+    const businesses = await this.prisma.business.findMany({
+      where: { isActive: true },
+      select: { id: true, adminApiKey: true },
+    });
+    const match = businesses.find((b) => timingSafeEqualStrings(provided, b.adminApiKey));
+    if (!match) {
       throw new UnauthorizedException('Invalid API key');
     }
 
+    request.businessId = match.id;
     return true;
   }
 }

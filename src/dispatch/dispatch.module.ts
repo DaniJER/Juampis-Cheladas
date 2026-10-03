@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { BotModule } from '../bot/bot.module';
-import { OrdersModule } from '../orders/orders.module';
-import { WhatsappApiModule } from '../whatsapp/whatsapp-api.module';
 import { DispatchService } from './dispatch.service';
 
+/** No imports needed: DispatchService only depends on PrismaService
+ *  (global) and takes its MessagingClient per call. */
 @Module({
-  imports: [BotModule, OrdersModule, WhatsappApiModule],
   providers: [DispatchService],
   exports: [DispatchService],
 })

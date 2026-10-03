@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Despacho</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px; background: #f2f2f2; color: #1a1a1a;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  #keyBar { display: flex; gap: 8px; margin-bottom: 16px; }
+  #keyBar input { flex: 1; padding: 10px; font-size: 16px; }
+  #keyBar button { padding: 10px 16px; font-size: 16px; }
+  #board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+  .col { background: #fff; border-radius: 8px; padding: 10px; min-width: 240px; flex: 1 0 240px; }
+  .col h2 { font-size: 14px; margin: 0 0 8px; color: #555; text-transform: uppercase; }
+  .card {
+    background: #fafafa; border: 1px solid #ddd; border-radius: 6px;
+    padding: 10px; margin-bottom: 8px; font-size: 14px;
+  }
+  .card .code { font-weight: bold; }
+  .card .items { margin: 6px 0; white-space: pre-line; }
+  .card .addr { color: #555; font-size: 13px; }
+  .card .actions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .card button {
+    padding: 6px 10px; font-size: 13px; border: none; border-radius: 4px;
+    background: #2563eb; color: #fff; cursor: pointer;
+  }
+  .card button.cancel { background: #b91c1c; }
+  #status { font-size: 13px; color: #777; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<h1>🍹 Despacho de pedidos</h1>
+<div id="keyBar">
+  <input id="apiKey" type="password" placeholder="API key del negocio (x-api-key)" />
+  <button id="saveKey">Guardar</button>
+</div>
+<div id="status"></div>
+<div id="board"></div>
+
+<script>
+(function () {
+  const COLUMNS = [
+    { status: 'PENDING', label: 'Pendiente' },
+    { status: 'ACCEPTED', label: 'Aceptado' },
+    { status: 'PREPARING', label: 'Preparando' },
+    { status: 'READY', label: 'Listo' },
+    { status: 'DISPATCHED', label: 'Despachado' },
+  ];
+
+  // Same forward-transition graph as OrdersService.canTransition — the
+  // backend re-validates on every request, this only decides which
+  // buttons to draw.
+  const TRANSITIONS = {
+    PENDING: ['ACCEPTED', 'CANCELLED'],
+    ACCEPTED: ['PREPARING', 'READY', 'CANCELLED'],
+    PREPARING: ['READY', 'CANCELLED'],
+    READY: ['DISPATCHED', 'CANCELLED'],
+    DISPATCHED: ['DELIVERED'],
+    DELIVERED: [],
+    CANCELLED: [],
+  };
+  const ACTION_LABEL = {
+    ACCEPTED: 'Aceptar',
+    PREPARING: 'Preparando',
+    READY: 'Listo',
+    DISPATCHED: 'Despachado',
+    DELIVERED: 'Entregado',
+    CANCELLED: 'Cancelar',
+  };
+
+  const boardEl = document.getElementById('board');
+  const statusEl = document.getElementById('status');
+  const keyInput = document.getElementById('apiKey');
+
+  function getKey() {
+    return localStorage.getItem('dashboardApiKey') || '';
+  }
+  keyInput.value = getKey();
+  document.getElementById('saveKey').addEventListener('click', () => {
+    localStorage.setItem('dashboardApiKey', keyInput.value.trim());
+    load();
+  });
+
+  function money(n) {
+    return Number(n || 0).toLocaleString('es-CO');
+  }
+
+  function renderCard(order) {
+    const el = document.createElement('div');
+    el.className = 'card';
+    const itemsText = order.items.map((it) => `${it.quantity} x ${it.name}`).join('\n');
+    el.innerHTML = `
+      <div class="code">#${order.businessSeq} — ${order.customerName || order.customerWaId}</div>
+      <div class="items">${itemsText}</div>
+      <div>Total: $${money(order.total)}</div>
+      <div class="addr">${order.address}</div>
+    `;
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    (TRANSITIONS[order.status] || []).forEach((next) => {
+      const btn = document.createElement('button');
+      btn.textContent = ACTION_LABEL[next] || next;
+      if (next === 'CANCELLED') btn.classList.add('cancel');
+      btn.addEventListener('click', () => updateStatus(order.id, next));
+      actions.appendChild(btn);
+    });
+    el.appendChild(actions);
+    return el;
+  }
+
+  async function updateStatus(id, status) {
+    statusEl.textContent = 'Actualizando…';
+    try {
+      const res = await fetch(`/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': getKey() },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || `HTTP ${res.status}`);
+      }
+      await load();
+    } catch (err) {
+      statusEl.textContent = 'Error: ' + err.message;
+    }
+  }
+
+  async function load() {
+    const key = getKey();
+    if (!key) {
+      statusEl.textContent = 'Ingresa la API key del negocio arriba.';
+      boardEl.innerHTML = '';
+      return;
+    }
+    try {
+      const res = await fetch('/orders', { headers: { 'x-api-key': key } });
+      if (!res.ok) {
+        throw new Error(res.status === 401 ? 'API key inválida' : `HTTP ${res.status}`);
+      }
+      const orders = await res.json();
+      statusEl.textContent = `${orders.length} pedido(s) activos · actualizado ${new Date().toLocaleTimeString('es-CO')}`;
+      renderBoard(orders);
+    } catch (err) {
+      statusEl.textContent = 'Error: ' + err.message;
+    }
+  }
+
+  function renderBoard(orders) {
+    boardEl.innerHTML = '';
+    for (const col of COLUMNS) {
+      const colEl = document.createElement('div');
+      colEl.className = 'col';
+      const list = orders
+        .filter((o) => o.status === col.status)
+        .sort((a, b) => a.businessSeq - b.businessSeq);
+      colEl.innerHTML = `<h2>${col.label} (${list.length})</h2>`;
+      list.forEach((o) => colEl.appendChild(renderCard(o)));
+      boardEl.appendChild(colEl);
+    }
+  }
+
+  load();
+  setInterval(load, 4000);
+})();
+</script>
+</body>
+</html>

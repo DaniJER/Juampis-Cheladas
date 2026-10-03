@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Cali - Leaflet</title>
+    <!-- Estilos de Leaflet (versión fijada) -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+    <style>
+        #map {
+            height: 100vh; /* El mapa ocupará toda la pantalla */
+            width: 100%;
+        }
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor del mapa -->
+    <div id="map"></div>
+
+    <!-- Script de Leaflet (debe ir ANTES de usar L) -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+    <script>
+        // Coordenadas centrales de Santiago de Cali
+        const latCali = 3.4516;
+        const lngCali = -76.5320;
+
+        // Inicializar el mapa centrado en Cali con un zoom de 13
+        const map = L.map('map').setView([latCali, lngCali], 13);
+
+        // Cargar la capa de diseño del mapa (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Marcador de referencia: Plaza de Caycedo
+        L.marker([3.4511, -76.5324]).addTo(map)
+            .bindPopup("<b>Plaza de Caycedo</b>");
+
+        // Marcador del local (delivery.origin en bot-config.json).
+        // OJO: coordenadas APROXIMADAS de "Calle 94 #8B-430" (norte de Cali).
+        // Reemplázalas por las exactas: en Google Maps, clic derecho sobre el
+        // punto -> "¿Qué hay aquí?" copia la lat,lng.
+        const local = L.marker([3.4975, -76.5045]).addTo(map);
+        local.bindPopup("<b>Juampis Cheladas</b><br>Calle 94 #8B-430").openPopup();
+        map.setView([3.4975, -76.5045], 14);
+    </script>
+</body>
+</html>

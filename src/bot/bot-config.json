@@ -1,41 +1,680 @@
 {
-  "businessName": "Juampis Cheladas",
+  "businessName": "Vice City Cocktails",
   "currency": "COP",
-  "location": "Cra 66 #10-45, Cali. Frente al parque. 📍",
+  "location": "Calle 94 #8B-430, Cali 📍",
   "hours": "Jueves a domingo, 3:00 pm - 11:00 pm",
-  "deliveryFee": 5000,
+  "delivery": {
+    "ratePerKm": 1000,
+    "origin": "3.4470137850626954,-76.47205966135705",
+    "fallbackFee": 8000,
+    "rain": {
+      "multiplier": 1.3,
+      "lat": 3.4975,
+      "lng": -76.5045
+    },
+    "zones": [
+      {
+        "name": "Alfonso López",
+        "aliases": [
+          "alfonso lopez"
+        ],
+        "km": 3.5,
+        "fee": 4000
+      },
+      {
+        "name": "San Marino",
+        "aliases": [],
+        "km": 3.7,
+        "fee": 4000
+      },
+      {
+        "name": "La Base",
+        "aliases": [],
+        "km": 3.8,
+        "fee": 4000
+      },
+      {
+        "name": "El Troncal",
+        "aliases": [
+          "troncal"
+        ],
+        "km": 5.3,
+        "fee": 6000
+      },
+      {
+        "name": "Nueva Floresta",
+        "aliases": [],
+        "km": 5.3,
+        "fee": 6000
+      },
+      {
+        "name": "San Luis",
+        "aliases": [],
+        "km": 5.9,
+        "fee": 6000
+      },
+      {
+        "name": "Marroquín",
+        "aliases": [
+          "marroquin"
+        ],
+        "km": 6.4,
+        "fee": 7000
+      },
+      {
+        "name": "El Rodeo",
+        "aliases": [
+          "rodeo"
+        ],
+        "km": 6.5,
+        "fee": 7000
+      },
+      {
+        "name": "Alfonso Bonilla Aragón",
+        "aliases": [
+          "alfonso bonilla aragon"
+        ],
+        "km": 6.8,
+        "fee": 7000
+      },
+      {
+        "name": "Chiminangos",
+        "aliases": [],
+        "km": 6.9,
+        "fee": 7000
+      },
+      {
+        "name": "Mojica",
+        "aliases": [],
+        "km": 7.1,
+        "fee": 8000
+      },
+      {
+        "name": "Santa Mónica",
+        "aliases": [
+          "santa monica"
+        ],
+        "km": 7.2,
+        "fee": 8000
+      },
+      {
+        "name": "Metropolitano del Norte",
+        "aliases": [
+          "metropolitano"
+        ],
+        "km": 7.2,
+        "fee": 8000
+      },
+      {
+        "name": "Prados del Norte",
+        "aliases": [],
+        "km": 7.7,
+        "fee": 8000
+      },
+      {
+        "name": "Poblado II",
+        "aliases": [
+          "poblado 2"
+        ],
+        "km": 7.8,
+        "fee": 8000
+      },
+      {
+        "name": "Aguablanca",
+        "aliases": [
+          "distrito de aguablanca"
+        ],
+        "km": 7.9,
+        "fee": 8000
+      },
+      {
+        "name": "El Diamante",
+        "aliases": [
+          "diamante"
+        ],
+        "km": 7.9,
+        "fee": 8000
+      },
+      {
+        "name": "Floralia",
+        "aliases": [],
+        "km": 7.9,
+        "fee": 8000
+      },
+      {
+        "name": "Manuela Beltrán",
+        "aliases": [
+          "manuela beltran"
+        ],
+        "km": 8,
+        "fee": 8000
+      },
+      {
+        "name": "El Vergel",
+        "aliases": [
+          "vergel"
+        ],
+        "km": 8.2,
+        "fee": 9000
+      },
+      {
+        "name": "Versalles",
+        "aliases": [],
+        "km": 8.3,
+        "fee": 9000
+      },
+      {
+        "name": "Belalcázar",
+        "aliases": [
+          "belalcazar"
+        ],
+        "km": 8.3,
+        "fee": 9000
+      },
+      {
+        "name": "Sucre",
+        "aliases": [],
+        "km": 8.4,
+        "fee": 9000
+      },
+      {
+        "name": "Antonio Nariño",
+        "aliases": [],
+        "km": 8.4,
+        "fee": 9000
+      },
+      {
+        "name": "Los Álamos",
+        "aliases": [
+          "los alamos",
+          "alamos"
+        ],
+        "km": 8.6,
+        "fee": 9000
+      },
+      {
+        "name": "San Vicente",
+        "aliases": [],
+        "km": 8.7,
+        "fee": 9000
+      },
+      {
+        "name": "Guayaquil",
+        "aliases": [],
+        "km": 8.8,
+        "fee": 9000
+      },
+      {
+        "name": "San Nicolás",
+        "aliases": [
+          "san nicolas"
+        ],
+        "km": 8.9,
+        "fee": 9000
+      },
+      {
+        "name": "Petecuy",
+        "aliases": [],
+        "km": 9,
+        "fee": 9000
+      },
+      {
+        "name": "Granada",
+        "aliases": [],
+        "km": 9.2,
+        "fee": 10000
+      },
+      {
+        "name": "San Bosco",
+        "aliases": [],
+        "km": 9.2,
+        "fee": 10000
+      },
+      {
+        "name": "Los Comuneros",
+        "aliases": [
+          "comuneros"
+        ],
+        "km": 9.2,
+        "fee": 10000
+      },
+      {
+        "name": "Chipichape",
+        "aliases": [],
+        "km": 9.2,
+        "fee": 10000
+      },
+      {
+        "name": "Champagnat",
+        "aliases": [],
+        "km": 9.5,
+        "fee": 10000
+      },
+      {
+        "name": "República de Israel",
+        "aliases": [
+          "republica de israel"
+        ],
+        "km": 9.6,
+        "fee": 10000
+      },
+      {
+        "name": "Centro",
+        "aliases": [
+          "centro de cali"
+        ],
+        "km": 9.7,
+        "fee": 10000
+      },
+      {
+        "name": "La Merced",
+        "aliases": [],
+        "km": 9.7,
+        "fee": 10000
+      },
+      {
+        "name": "San Pedro",
+        "aliases": [],
+        "km": 9.7,
+        "fee": 10000
+      },
+      {
+        "name": "Juanambú",
+        "aliases": [
+          "juanambu"
+        ],
+        "km": 9.8,
+        "fee": 10000
+      },
+      {
+        "name": "Alameda",
+        "aliases": [],
+        "km": 9.8,
+        "fee": 10000
+      },
+      {
+        "name": "Vipasa",
+        "aliases": [],
+        "km": 10.2,
+        "fee": 11000
+      },
+      {
+        "name": "Pasoancho",
+        "aliases": [],
+        "km": 10.2,
+        "fee": 11000
+      },
+      {
+        "name": "El Templete",
+        "aliases": [
+          "templete"
+        ],
+        "km": 10.3,
+        "fee": 11000
+      },
+      {
+        "name": "Ciudad Córdoba",
+        "aliases": [
+          "ciudad cordoba"
+        ],
+        "km": 10.5,
+        "fee": 11000
+      },
+      {
+        "name": "El Guabal",
+        "aliases": [
+          "guabal"
+        ],
+        "km": 10.6,
+        "fee": 11000
+      },
+      {
+        "name": "Menga",
+        "aliases": [],
+        "km": 10.6,
+        "fee": 11000
+      },
+      {
+        "name": "San Cayetano",
+        "aliases": [],
+        "km": 10.7,
+        "fee": 11000
+      },
+      {
+        "name": "San Antonio",
+        "aliases": [],
+        "km": 10.8,
+        "fee": 11000
+      },
+      {
+        "name": "La Flora",
+        "aliases": [],
+        "km": 10.9,
+        "fee": 11000
+      },
+      {
+        "name": "El Peñón",
+        "aliases": [
+          "el penon",
+          "penon"
+        ],
+        "km": 11.2,
+        "fee": 12000
+      },
+      {
+        "name": "Panamericano",
+        "aliases": [],
+        "km": 11.2,
+        "fee": 12000
+      },
+      {
+        "name": "San Fernando",
+        "aliases": [
+          "san fernando viejo",
+          "san fernando nuevo"
+        ],
+        "km": 11.4,
+        "fee": 12000
+      },
+      {
+        "name": "Tequendama",
+        "aliases": [],
+        "km": 11.6,
+        "fee": 12000
+      },
+      {
+        "name": "La Hacienda",
+        "aliases": [],
+        "km": 11.7,
+        "fee": 12000
+      },
+      {
+        "name": "Normandía",
+        "aliases": [
+          "normandia"
+        ],
+        "km": 11.9,
+        "fee": 12000
+      },
+      {
+        "name": "Nueva Tequendama",
+        "aliases": [],
+        "km": 11.9,
+        "fee": 12000
+      },
+      {
+        "name": "Departamental",
+        "aliases": [],
+        "km": 11.9,
+        "fee": 12000
+      },
+      {
+        "name": "Santa Teresita",
+        "aliases": [],
+        "km": 12,
+        "fee": 12000
+      },
+      {
+        "name": "Bellavista",
+        "aliases": [],
+        "km": 12.2,
+        "fee": 13000
+      },
+      {
+        "name": "Belén",
+        "aliases": [
+          "belen"
+        ],
+        "km": 12.3,
+        "fee": 13000
+      },
+      {
+        "name": "El Lido",
+        "aliases": [
+          "lido"
+        ],
+        "km": 12.4,
+        "fee": 13000
+      },
+      {
+        "name": "Santa Isabel",
+        "aliases": [],
+        "km": 12.4,
+        "fee": 13000
+      },
+      {
+        "name": "El Ingenio",
+        "aliases": [
+          "ingenio"
+        ],
+        "km": 13,
+        "fee": 13000
+      },
+      {
+        "name": "El Limonar",
+        "aliases": [
+          "limonar"
+        ],
+        "km": 13,
+        "fee": 13000
+      },
+      {
+        "name": "Caney",
+        "aliases": [],
+        "km": 13.5,
+        "fee": 14000
+      },
+      {
+        "name": "Siloé",
+        "aliases": [
+          "siloe"
+        ],
+        "km": 13.6,
+        "fee": 14000
+      },
+      {
+        "name": "Pampalinda",
+        "aliases": [],
+        "km": 13.7,
+        "fee": 14000
+      },
+      {
+        "name": "San Joaquín",
+        "aliases": [
+          "san joaquin"
+        ],
+        "km": 13.8,
+        "fee": 14000
+      },
+      {
+        "name": "Capri",
+        "aliases": [],
+        "km": 13.9,
+        "fee": 14000
+      },
+      {
+        "name": "Bosque Municipal",
+        "aliases": [
+          "bosque"
+        ],
+        "km": 14,
+        "fee": 14000
+      },
+      {
+        "name": "Tierra Blanca",
+        "aliases": [],
+        "km": 14.3,
+        "fee": 15000
+      },
+      {
+        "name": "Nápoles",
+        "aliases": [
+          "napoles"
+        ],
+        "km": 14.3,
+        "fee": 15000
+      },
+      {
+        "name": "Terrón Colorado",
+        "aliases": [
+          "terron colorado"
+        ],
+        "km": 14.6,
+        "fee": 15000
+      },
+      {
+        "name": "Meléndez",
+        "aliases": [
+          "melendez"
+        ],
+        "km": 15.2,
+        "fee": 16000
+      },
+      {
+        "name": "Univalle",
+        "aliases": [
+          "ciudad universitaria"
+        ],
+        "km": 15.5,
+        "fee": 16000
+      },
+      {
+        "name": "Valle del Lili",
+        "aliases": [
+          "valle del lily",
+          "valle de lili"
+        ],
+        "km": 15.6,
+        "fee": 16000
+      },
+      {
+        "name": "Ciudad Jardín",
+        "aliases": [
+          "ciudad jardin"
+        ],
+        "km": 17.1,
+        "fee": 18000
+      },
+      {
+        "name": "Pance",
+        "aliases": [],
+        "km": 27.9,
+        "fee": 28000
+      }
+    ]
+  },
   "menu": [
-    { "id": "mojito", "name": "Mojito", "description": "Ron, hierbabuena, limón", "price": 15000, "available": true },
-    { "id": "margarita", "name": "Margarita", "description": "Tequila, triple sec, limón", "price": 18000, "available": true },
-    { "id": "pina_colada", "name": "Piña Colada", "description": "Ron, crema de coco, piña", "price": 16000, "available": true },
-    { "id": "michelada", "name": "Michelada", "description": "Cerveza, limón, salsas, escarcha", "price": 12000, "available": true },
-    { "id": "gin_tonic", "name": "Gin Tonic", "description": "Gin, tónica, toronja", "price": 17000, "available": true }
+    {
+      "id": "mojito",
+      "name": "Mojito",
+      "description": "Ron, hierbabuena, limón",
+      "price": 15000,
+      "available": true
+    },
+    {
+      "id": "margarita",
+      "name": "Margarita",
+      "description": "Tequila, triple sec, limón",
+      "price": 18000,
+      "available": true
+    },
+    {
+      "id": "pina_colada",
+      "name": "Piña Colada",
+      "description": "Ron, crema de coco, piña",
+      "price": 16000,
+      "available": true
+    },
+    {
+      "id": "michelada",
+      "name": "Michelada",
+      "description": "Cerveza, limón, salsas, escarcha",
+      "price": 12000,
+      "available": true
+    },
+    {
+      "id": "gin_tonic",
+      "name": "Gin Tonic",
+      "description": "Gin, tónica, toronja",
+      "price": 17000,
+      "available": true
+    }
   ],
   "faqs": [
     {
-      "keywords": ["ubicacion", "ubicación", "direccion", "dirección", "donde", "dónde quedan", "local"],
+      "keywords": [
+        "ubicacion",
+        "ubicación",
+        "direccion",
+        "dirección",
+        "donde quedan",
+        "dónde quedan",
+        "donde estan",
+        "dónde están",
+        "como llego",
+        "cómo llego",
+        "ubicados",
+        "sede",
+        "mapa",
+        "el local"
+      ],
       "answer": "Estamos en {location}"
     },
     {
-      "keywords": ["horario", "horarios", "hora", "abren", "cierran", "atienden"],
+      "keywords": [
+        "horario",
+        "horarios",
+        "hora",
+        "abren",
+        "cierran",
+        "atienden",
+        "hasta que hora"
+      ],
       "answer": "Nuestro horario: {hours}"
     },
     {
-      "keywords": ["domicilio", "domicilios", "envio", "envío", "delivery", "reparto"],
-      "answer": "Hacemos domicilios en Cali. Costo de envío: ${deliveryFee}."
+      "keywords": [
+        "domicilio",
+        "domicilios",
+        "envio",
+        "envío",
+        "delivery",
+        "reparto",
+        "cuanto cobran por el envio",
+        "vale el domicilio",
+        "cuesta el domicilio"
+      ],
+      "answer": "Hacemos domicilios en Cali. El domicilio cuesta ${ratePerKmFmt} por km desde el local; te decimos el valor exacto apenas nos pases tu dirección. Ya queda incluido en el total del pedido."
     },
     {
-      "keywords": ["pago", "pagos", "pagar", "efectivo", "transferencia", "nequi", "daviplata"],
+      "keywords": [
+        "pago",
+        "pagos",
+        "pagar",
+        "efectivo",
+        "transferencia",
+        "nequi",
+        "daviplata"
+      ],
       "answer": "Puedes pagar en efectivo contra entrega o por transferencia (Nequi / Daviplata)."
     }
   ],
   "messages": {
     "welcome": "🍹 ¡Bienvenido a {businessName}!\nElige una opción o escríbenos tu pregunta.",
     "menuHeader": "Nuestra carta 🍸",
+    "menuHere": "Esta es nuestra carta 🍸",
+    "cartHeader": "Tu pedido va así (domicilio incluido):",
+    "cartEmpty": "Todavía no has agregado nada a tu pedido. Escribe *menú* para ver la carta.",
     "askQuantity": "¿Cuántos *{product}* quieres? Responde con un número (1-20).",
     "invalidQuantity": "Necesito un número entre 1 y 20. ¿Cuántos quieres?",
     "addMore": "¿Quieres agregar otro coctel?",
-    "askAddress": "Perfecto. ¿A qué dirección lo enviamos? (incluye barrio y datos útiles)",
+    "askAddress": "Perfecto. ¿A qué dirección lo enviamos? (incluye *barrio* y datos útiles — el domicilio se cobra a ${ratePerKmFmt} por km)",
+    "askBarrio": "¿En qué barrio es la entrega? Elígelo de la lista para calcular el domicilio.",
+    "barrioListHeader": "Barrios con domicilio",
+    "barrioListButton": "Ver barrios",
+    "staffRainOn": "☔ Recargo por lluvia ACTIVADO. Los domicilios se cobran ×{multiplier} hasta que se desactive.",
+    "staffRainOff": "☀️ Recargo por lluvia DESACTIVADO.",
+    "staffRainAuto": "🤖 Recargo por lluvia en modo automático (según el clima en vivo).",
     "confirmHeader": "Revisa tu pedido:",
     "confirmFooter": "¿Confirmas el pedido?",
     "orderPlaced": "¡Listo! 🎉 Tu pedido *#{code}* fue recibido. Te avisamos cuando lo acepten y cuando vaya en camino.",

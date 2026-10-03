@@ -14,11 +14,11 @@ export interface ConversationSnapshot {
 export class ConversationService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async load(waId: string, name?: string): Promise<ConversationSnapshot> {
+  async load(businessId: string, waId: string, name?: string): Promise<ConversationSnapshot> {
     const row = await this.prisma.conversation.upsert({
-      where: { waId },
+      where: { businessId_waId: { businessId, waId } },
       update: name ? { name } : {},
-      create: { waId, name, state: BotState.START },
+      create: { businessId, waId, name, state: BotState.START },
     });
 
     return {
@@ -30,20 +30,22 @@ export class ConversationService {
   }
 
   async save(
+    businessId: string,
     waId: string,
     state: BotStateValue,
     draft: OrderDraft,
   ): Promise<void> {
     await this.prisma.conversation.update({
-      where: { waId },
+      where: { businessId_waId: { businessId, waId } },
       data: { state, draft: draft as unknown as Prisma.InputJsonValue },
     });
   }
 
-  /** Has this webhook message id already been handled? Records it if not. */
-  async isDuplicate(messageId: string): Promise<boolean> {
+  /** Has this webhook message id already been handled (for this business)?
+   *  Records it if not. */
+  async isDuplicate(businessId: string, messageId: string): Promise<boolean> {
     try {
-      await this.prisma.processedMessage.create({ data: { id: messageId } });
+      await this.prisma.processedMessage.create({ data: { businessId, id: messageId } });
       return false;
     } catch (err) {
       if (

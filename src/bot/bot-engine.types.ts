@@ -21,6 +21,12 @@ export interface DraftItem {
 export interface OrderDraft {
   items: DraftItem[];
   address?: string;
+  /** Delivery barrio, once identified (from the address or the picker). */
+  barrio?: string;
+  /** Delivery charge for `barrio`; falls back to delivery.fallbackFee. */
+  deliveryFee?: number;
+  /** Whether `deliveryFee` already includes the rain surcharge. */
+  rain?: boolean;
   /** Product chosen but still awaiting a quantity. */
   pendingProductId?: string;
 }
@@ -33,6 +39,8 @@ export interface EngineInput {
   text: string;
   /** id of a tapped button / list row, if the message was interactive. */
   replyId?: string;
+  /** Is it raining over the delivery area? Drives the rain surcharge. */
+  raining?: boolean;
 }
 
 export interface EngineOrder {
