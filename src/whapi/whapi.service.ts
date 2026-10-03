@@ -6,15 +6,23 @@ import { DispatchService } from '../dispatch/dispatch.service';
 import { OrdersService } from '../orders/orders.service';
 import { WeatherService } from '../weather/weather.service';
 import { handleRainCommand } from '../dispatch/rain-command';
-import { WhatsappApiService } from './whatsapp-api.service';
-import { InboundMessage, WhatsappWebhookBody, parseWebhook } from './whatsapp.types';
+import { WhapiApiService } from './whapi-api.service';
+import { WhapiWebhookBody, parseWebhook } from './whapi.types';
+import type { InboundMessage } from '../whatsapp/whatsapp.types';
 
+/**
+ * Orchestrator for the Whapi.cloud channel — mirrors WhatsappService.
+ * Shares BotEngineService, ConversationService, OrdersService and
+ * DispatchService with the Meta channel (same conversations table, same
+ * order records, same staff-dispatch logic); only the transport
+ * (WhapiApiService) differs.
+ */
 @Injectable()
-export class WhatsappService {
-  private readonly logger = new Logger(WhatsappService.name);
+export class WhapiService {
+  private readonly logger = new Logger(WhapiService.name);
 
   constructor(
-    private readonly api: WhatsappApiService,
+    private readonly api: WhapiApiService,
     private readonly engine: BotEngineService,
     private readonly conversations: ConversationService,
     private readonly orders: OrdersService,
@@ -23,7 +31,7 @@ export class WhatsappService {
     private readonly weather: WeatherService,
   ) {}
 
-  async processWebhook(businessId: string, body: WhatsappWebhookBody): Promise<void> {
+  async processWebhook(businessId: string, body: WhapiWebhookBody): Promise<void> {
     const messages = parseWebhook(body);
     for (const msg of messages) {
       try {
@@ -56,7 +64,6 @@ export class WhatsappService {
       }
     }
 
-    // Customer conversation.
     const convo = await this.conversations.load(businessId, msg.from, msg.contactName);
     const result = this.engine.handle(businessId, convo.state, convo.draft, {
       text: msg.text ?? '',
@@ -78,7 +85,7 @@ export class WhatsappService {
         this.botConfig.message(businessId, 'orderPlaced', { code: order.businessSeq }),
       );
       await this.dispatch.notifyNewOrder(businessId, order, client);
-      this.logger.log(`Order #${order.businessSeq} created for ${msg.from} (business ${businessId}, via Meta)`);
+      this.logger.log(`Order #${order.businessSeq} created for ${msg.from} (business ${businessId}, via Whapi)`);
     }
 
     await this.conversations.save(businessId, msg.from, result.nextState, result.draft);

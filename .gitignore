@@ -35,6 +35,9 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Claude Code local settings (can capture secrets via allowlisted commands)
+.claude/
+
 # dotenv environment variable files
 .env
 .env.development.local
@@ -54,3 +57,4 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+public/Vice city.pdf
